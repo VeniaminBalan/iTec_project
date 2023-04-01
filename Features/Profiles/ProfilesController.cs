@@ -4,6 +4,7 @@ using iTec_project.Features.Profiles.Models;
 using iTec_project.Features.Profiles.Services;
 using iTec_project.Features.Profiles.Views;
 using iTec_project.Features.Roles.Models;
+using iTec_project.Features.Users.Models;
 using iTec_project.Utils.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,12 +26,24 @@ public class ProfilesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ProfileResponse>>> Get()
     {
-        var profiles = await _appDbContext.Profiles
-            .Include(p=>p.User)
-            .Select(p=> ProfileService.GetProfileResponse(p))
-            .ToListAsync();
+        var p = new ProfileModel();
+        var user = new UserModel
+        {
+            Name = "Nelu",
+            Email = "nelu@email.com",
+            Role = new RoleModel
+            {
+                Name ="Manager"
+            }
+        };
+        p.User = user;
 
-        return Ok(profiles);
+        var r = new List<ProfileResponse>()
+        {
+            ProfileService.GetProfileResponse(p)
+        };
+
+        return r;
     }
 
     [HttpGet("{Id}")]
