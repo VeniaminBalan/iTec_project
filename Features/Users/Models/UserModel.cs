@@ -7,8 +7,10 @@ namespace  iTec_project.Features.Users.Models;
 
 public class UserModel : Model
 {
-    public string Name { get; set; }
     public string Email { get; set; }
+    public string Name { get; set; }
+    public string Position { get; set; }
+    public string QuickInfo { get; set; }
     public string Salt { get; set; }
     public string Hashed { get; set; }
     public RoleModel  Role { get; set; }

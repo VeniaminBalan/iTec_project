@@ -34,12 +34,14 @@ public class UsersController : ControllerBase
         //existingUser = await _appDbContext.Users.FirstOrDefaultAsync(r=> r.Name == request.Name);
         //if (existingUser is not null) return BadRequest("User already exists with that name");
 
-        HashPassword hashedPassword = new HashPassword(request.Password);
+        HashPassword hashedPassword = new HashPassword("1111");
         
 
         var user = new UserModel
         {
-            Name = request.Name,
+            Name = " ",
+            QuickInfo = request.QuickInfo,
+            Position = request.Position,
             Email = request.Email,
             Salt = hashedPassword.GetSalt(),
             Hashed = hashedPassword.GetHashed(),
@@ -53,19 +55,9 @@ public class UsersController : ControllerBase
         profile = (await _appDbContext.Profiles.AddAsync(profile)).Entity;
         
         await _appDbContext.SaveChangesAsync();
-       
-        var res = new UserResponse
-        {
-            Id = user.Id,
-            Name = user.Name,
-            Email = user.Email,
-            Role = new RoleResponse
-            {
-                Id = user.Role.Id,
-                Name = user.Role.Name,
-            },
-        };
 
+        var res = UserService.GetUserResponse(user);
+        
         return Created("user", res);
     }
     
@@ -85,4 +77,24 @@ public class UsersController : ControllerBase
 
         return res;
     }
+    
+    [HttpPut("{Id}")]
+    public async Task<ActionResult<UserResponse>> Put([FromRoute]string Id, string roleName)
+    {
+        var user = await _appDbContext.Users
+            .FirstOrDefaultAsync(u=>u.Id == Id);
+
+        if (user is null) return BadRequest("user not found");
+
+        var role = await _appDbContext.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+        if (role is null) return BadRequest("role not found");
+
+        user.Role = role;
+        
+        //user = (await _appDbContext.Users.AddAsync(user)).Entity;
+        await _appDbContext.SaveChangesAsync();
+
+        return UserService.GetUserResponse(user);
+    }
+    
 }

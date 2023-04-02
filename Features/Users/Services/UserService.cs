@@ -11,14 +11,18 @@ public class UserService
     {
         return new UserResponse
         {
+            
             Id = user.Id,
+            StartTime = user.Created,
             Name = user.Name,
             Email = user.Email,
+            QuickInfo = user.QuickInfo,
+            Position = user.Position,
             Role = new RoleResponse
             {
                 Id = user.Role.Id,
                 Name = user.Role.Name,
-            }
+            },
         };
     }
 

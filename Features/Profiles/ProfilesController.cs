@@ -26,11 +26,13 @@ public class ProfilesController : ControllerBase
     public async Task<ActionResult<IEnumerable<ProfileResponse>>> Get()
     {
         var profiles = await _appDbContext.Profiles
-            .Include(p=>p.User)
-            .Select(p=> ProfileService.GetProfileResponse(p))
+            .Include(u => u.User)
+            .ThenInclude(u=> u.Role)
             .ToListAsync();
 
-        return Ok(profiles);
+        var res = profiles.Select(p => ProfileService.GetProfileResponse(p)).ToList();
+
+        return Ok(res);
     }
 
     [HttpGet("{Id}")]
